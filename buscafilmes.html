@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca de Filmes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        input {
+            padding: 8px;
+            width: 60%;
+        }
+        button {
+            padding: 8px;
+            cursor: pointer;
+        }
+        #resultado {
+            margin-top: 20px;
+        }
+        .filme {
+            display: flex;
+            align-items: center;
+            background: #f0f0f0;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        img {
+            width: 100px;
+            height: auto;
+            margin-right: 10px;
+        }
+        .info {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Buscador de Filmes</h2>
+<input type="text" id="buscar" placeholder="Digite o nome do filme...">
+<button onclick="buscarFilme()">Buscar</button>
+
+<div id="resultado"></div>
+
+<script>
+    function buscarFilme() {
+        var nomeFilme = document.getElementById("buscar").value;
+        if (nomeFilme.trim() === "") {
+            alert("Digite um nome para buscar!");
+            return;
+        }
+
+        var url = "http://www.omdbapi.com/?apikey=4a3b711b&s=" + encodeURIComponent(nomeFilme);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.Response === "True") {
+                    exibirFilmes(data.Search);
+                } else {
+                    document.getElementById("resultado").innerHTML = "<p>Nenhum filme encontrado.</p>";
+                }
+            })
+            .catch(error => console.log("Erro ao buscar filmes:", error));
+    }
+
+    function exibirFilmes(filmes) {
+        var resultado = document.getElementById("resultado");
+        resultado.innerHTML = "";
+
+        filmes.forEach(filme => {
+            var filmeDiv = document.createElement("div");
+            filmeDiv.classList.add("filme");
+
+            filmeDiv.innerHTML = `
+                <img src="${filme.Poster !== "N/A" ? filme.Poster : "https://via.placeholder.com/100"}" alt="Capa do Filme">
+                <div class="info">
+                    <h3>${filme.Title}</h3>
+                    <p><strong>Ano:</strong> ${filme.Year}</p>
+                    <p><strong>Tipo:</strong> ${filme.Type}</p>
+                </div>
+            `;
+
+            resultado.appendChild(filmeDiv);
+        });
+    }
+</script>
+
+</body>
+</html>

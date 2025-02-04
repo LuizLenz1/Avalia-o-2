@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronômetro</title>
+    <style>
+        body {
+            background-color: black;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            color: white;
+            margin-top: 50px;
+        }
+        h1 {
+            font-size: 40px;
+        }
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .botao-iniciar { background-color: green; }
+        .botao-pausar { background-color: grey; }
+        .botao-parar { background-color: red; }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+        li {
+            font-size: 18px;
+            background: grey;
+            padding: 5px;
+            margin: 3px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h1 id="timer">00:00:00</h1>
+<button class="botao-iniciar" onclick="start()">Iniciar</button>
+<button class="botao-pausar" onclick="pause()">Pausar</button>
+<button class="botao-parar" onclick="stop()">Parar</button>
+
+<h2>Lista de Pausas:</h2>
+<ul id="pause-list"></ul>
+
+<script>
+    var startTime;
+    var elapsedTime = 0;
+    var intervalo;
+    var listaPausas = document.getElementById("pause-list");
+
+    function start() {
+        if (!intervalo) {
+            startTime = Date.now() - elapsedTime;
+            intervalo = setInterval(atualizarCronometro, 100);
+        }
+    }
+
+    function pause() {
+        if (intervalo) {
+            clearInterval(intervalo);
+            intervalo = null;
+            elapsedTime = Date.now() - startTime;
+
+            var item = document.createElement("li");
+            item.innerText = "Pausa: " + document.getElementById("timer").innerText;
+            listaPausas.appendChild(item);
+        }
+    }
+
+    function stop() {
+        clearInterval(intervalo);
+        intervalo = null;
+        elapsedTime = 0;
+        document.getElementById("timer").innerText = "00:00:00";
+        listaPausas.innerHTML = "";
+    }
+
+    function atualizarCronometro() {
+        var segundosTotais = Math.floor((Date.now() - startTime) / 1000);
+        var hr = Math.floor(segundosTotais / 3600);
+        var min = Math.floor((segundosTotais % 3600) / 60);
+        var sec = segundosTotais % 60;
+
+        document.getElementById("timer").innerText =
+            doisDigitos(hr) + ":" + doisDigitos(min) + ":" + doisDigitos(sec);
+    }
+
+    function doisDigitos(numero) {
+        if (numero < 10) {
+            return "0" + numero;
+        } else {
+            return numero;
+        }
+    }
+
+    document.addEventListener("keydown", function(event) {
+        if (event.code === "Space") {
+            if (intervalo) {
+                pause();
+            } else {
+                start();
+            }
+        } else if (event.key.toLowerCase() === "s") {
+            stop();
+        }
+    });
+</script>
+
+</body>
+</html

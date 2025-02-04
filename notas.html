@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloco de Notas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #lista-notas {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .botoes {
+            display: flex;
+            gap: 5px;
+        }
+        button {
+            padding: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+        }
+        .botao-excluir {
+            background: red;
+            color: white;
+        }
+        .botao-editar {
+            background: blue;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Bloco de Notas</h2>
+
+<ul id="lista-notas"></ul>
+
+<textarea id="conteudo-nota" placeholder="Digite sua nota aqui..."></textarea>
+<br>
+<button onclick="salvarNota()">Salvar Nota</button>
+<button onclick="apagarTodasNotas()">Apagar Tudo</button>
+
+<script>
+    var notas = [];
+
+    function carregarNotas() {
+        var notasSalvas = localStorage.getItem("notas");
+        if (notasSalvas) {
+            notas = JSON.parse(notasSalvas);
+            exibirNotas();
+        }
+    }
+
+    function salvarNota() {
+        var conteudo = document.getElementById("conteudo-nota").value;
+        if (conteudo.trim() !== "") {
+            notas.push(conteudo);
+            localStorage.setItem("notas", JSON.stringify(notas));
+            document.getElementById("conteudo-nota").value = "";
+            exibirNotas();
+        }
+    }
+
+    function exibirNotas() {
+        var listaNotas = document.getElementById("lista-notas");
+        listaNotas.innerHTML = "";
+        for (var i = 0; i < notas.length; i++) {
+            var item = document.createElement("li");
+            item.innerHTML = '<span>' + notas[i] + '</span>' +
+                '<div class="botoes">' +
+                '<button class="botao-editar" onclick="editarNota(' + i + ')">Editar</button>' +
+                '<button class="botao-excluir" onclick="excluirNota(' + i + ')">X</button>' +
+                '</div>';
+            listaNotas.appendChild(item);
+        }
+    }
+
+    function editarNota(indice) {
+        var novoConteudo = prompt("Edite sua nota:", notas[indice]);
+        if (novoConteudo !== null) {
+            notas[indice] = novoConteudo;
+            localStorage.setItem("notas", JSON.stringify(notas));
+            exibirNotas();
+        }
+    }
+
+    function excluirNota(indice) {
+        var confirmarExclusao = confirm("Tem certeza que deseja excluir esta nota?");
+        if (confirmarExclusao) {
+            notas.splice(indice, 1);
+            localStorage.setItem("notas", JSON.stringify(notas));
+            exibirNotas();
+        }
+    }
+
+    function apagarTodasNotas() {
+        var confirmarExclusao = confirm("Tem certeza que deseja apagar todas as notas?");
+        if (confirmarExclusao) {
+            notas = [];
+            localStorage.removeItem("notas");
+            exibirNotas();
+        }
+    }
+
+    carregarNotas();
+</script>
+
+</body>
+</html>
