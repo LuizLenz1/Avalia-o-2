@@ -43,54 +43,54 @@
 <body>
 
 <h1 id="timer">00:00:00</h1>
-<button class="botao-iniciar" onclick="start()">Iniciar</button>
-<button class="botao-pausar" onclick="pause()">Pausar</button>
-<button class="botao-parar" onclick="stop()">Parar</button>
+<button class="botao-iniciar" onclick="iniciar()">Iniciar</button>
+<button class="botao-pausar" onclick="pausar()">Pausar</button>
+<button class="botao-parar" onclick="parar()">Parar</button>
 
 <h2>Lista de Pausas:</h2>
 <ul id="pause-list"></ul>
 
 <script>
-    var startTime;
-    var elapsedTime = 0;
+    var tempoInicial;
+    var tempoDecorrido = 0;
     var intervalo;
-    var listaPausas = document.getElementById("pause-list");
+    var listaDePausas = document.getElementById("pause-list");
 
-    function start() {
+    function iniciar() {
         if (!intervalo) {
-            startTime = Date.now() - elapsedTime;
+            tempoInicial = Date.now() - tempoDecorrido;
             intervalo = setInterval(atualizarCronometro, 100);
         }
     }
 
-    function pause() {
+    function pausar() {
         if (intervalo) {
             clearInterval(intervalo);
             intervalo = null;
-            elapsedTime = Date.now() - startTime;
+            tempoDecorrido = Date.now() - tempoInicial;
 
             var item = document.createElement("li");
             item.innerText = "Pausa: " + document.getElementById("timer").innerText;
-            listaPausas.appendChild(item);
+            listaDePausas.appendChild(item);
         }
     }
 
-    function stop() {
+    function parar() {
         clearInterval(intervalo);
         intervalo = null;
-        elapsedTime = 0;
+        tempoDecorrido = 0;
         document.getElementById("timer").innerText = "00:00:00";
-        listaPausas.innerHTML = "";
+        listaDePausas.innerHTML = "";
     }
 
     function atualizarCronometro() {
-        var segundosTotais = Math.floor((Date.now() - startTime) / 1000);
-        var hr = Math.floor(segundosTotais / 3600);
-        var min = Math.floor((segundosTotais % 3600) / 60);
-        var sec = segundosTotais % 60;
+        var segundosTotais = Math.floor((Date.now() - tempoInicial) / 1000);
+        var horas = Math.floor(segundosTotais / 3600);
+        var minutos = Math.floor((segundosTotais % 3600) / 60);
+        var segundos = segundosTotais % 60;
 
         document.getElementById("timer").innerText =
-            doisDigitos(hr) + ":" + doisDigitos(min) + ":" + doisDigitos(sec);
+            doisDigitos(horas) + ":" + doisDigitos(minutos) + ":" + doisDigitos(segundos);
     }
 
     function doisDigitos(numero) {
@@ -102,14 +102,16 @@
     }
 
     document.addEventListener("keydown", function(event) {
+       
         if (event.code === "Space") {
+            event.preventDefault(); 
             if (intervalo) {
-                pause();
+                pausar();
             } else {
-                start();
+                iniciar();
             }
         } else if (event.key.toLowerCase() === "s") {
-            stop();
+            parar();
         }
     });
 </script>
